@@ -72,7 +72,12 @@ public class Principal {
         List<Functions> lista = functionsJpaController.getFunctionsByHostName(host);
         List<Events> listaE = new ArrayList<>();
 
-        gestionArchivo.escrbir("PONER EL ENCABEZADO: event_id,event_type,....,ns_recovery_time", false);
+        String encabezado = "1_event_id,2_event_type,3_event_clock,4_event_ns,5_event_value,6_event_ifrecovery,7_recovery_clock,"
+                + "8_recovery_ns,9_event_duration,10_function_name,11_function_parameter,12_trigger_dscr,13_trigger_expression,"
+                + "14_trigger_flags,15_trigger_priority,16_trigger_type,17_trigger_recovery_mode,18_trigger_recovery_expression,"
+                + "19_item_delay,20_item_name,21_item_type,22_item_value_type,23_item_dscr,24_item_flags,25_item_port,"
+                + "26_item_snmpcommunity,27_item_snmpoid,28_item_units";
+        gestionArchivo.escrbir(encabezado, false);
 
         for (Functions f : lista) {
             listaE.addAll(eventsJpaController.getEventsByTriggers(f.getTriggerid().getTriggerid()));
@@ -96,7 +101,7 @@ public class Principal {
         //INFORMACIÓN DEL EVENTO
         escriba.append(event.getEventid() + ","); //id del evento
         escriba.append(event.getSource() + ","); //tipo de evento
-        escriba.append(event.getObjectid() + ","); //id del trigger
+        //escriba.append(event.getObjectid() + ","); //id del trigger NO NECESARIO
         escriba.append(event.getClock() + ","); // momento en el que el evento fue creado (timestamp)
         escriba.append(event.getNs() + ","); // momento en el que el evento fue creado (en nanosegundos)
         escriba.append(event.getValue() + ","); // estado (indica si es un problema o no)
@@ -107,10 +112,10 @@ public class Principal {
             escriba.append(event.getEventRecovery().getREventid().getClock() + ","); // momento en el que el evento fue recuperado (timestamp)
             escriba.append(event.getEventRecovery().getREventid().getNs() + ","); // momento en el que el evento fue recuperado (en nanosegundos)
 
-            //podría calcular de una vez el delta de t, para indicar la duración del evento
-            //escriba.append("--calcular duración del evento--");
+            int interval = event.getEventRecovery().getREventid().getClock()-event.getClock();
+            escriba.append(interval + ","); //duración en timestamp        
         } else {
-            escriba.append("0,0,0,"); // 0 indica que el evento no se recuperó, el tiempo de recuperación es 0
+            escriba.append("0,0,0,0,"); // 0 indica que el evento no se recuperó, el tiempo de recuperación es 0
         }
 
         //INFORMACIÓN DE LA FUNCIÓN
@@ -119,27 +124,25 @@ public class Principal {
         
         //INFORMACIÓN DEL TRIGGER
         escriba.append(function.getTriggerid().getDescription()+","); // descripción del trigger
-        escriba.append(function.getTriggerid().getExpression()+","); // expresión del trigger
+        escriba.append(function.getTriggerid().getExpression().replaceAll("[\n\r]"," ")+","); // expresión del trigger
         escriba.append(function.getTriggerid().getFlags()+","); //indica el origen del trigger
         escriba.append(function.getTriggerid().getPriority()+","); // veveridad del trigger
         escriba.append(function.getTriggerid().getType()+","); // indica si el trigger puede generar o no múltiples problemas
         escriba.append(function.getTriggerid().getRecoveryMode()+","); //modo de generación del evento OK
-        escriba.append(function.getTriggerid().getRecoveryExpression()+","); //expresión de recuperación
+        escriba.append(function.getTriggerid().getRecoveryExpression().replaceAll("[\n\r]"," ")+","); //expresión de recuperación
                
         //INFORMACIÓN DEL ITEM
         escriba.append(function.getItemid().getDelay()+","); // intervalo de tiempo de actualización
         escriba.append(function.getItemid().getName()+","); //nombre del ítem
         escriba.append(function.getItemid().getType()+","); //tipo de ítem
         escriba.append(function.getItemid().getValueType()+","); //tipo de información del ítem
-        escriba.append(function.getItemid().getDescription()+","); // descripción del ítem
+        escriba.append(function.getItemid().getDescription().replaceAll("[\n\r]"," ").replaceAll(",","")+","); // descripción del ítem
         escriba.append(function.getItemid().getFlags()+","); //origen del ítem
         escriba.append(function.getItemid().getPort()+","); //puerto monitorizado por el ítem
         escriba.append(function.getItemid().getSnmpCommunity()+","); //comunidad snmp
         escriba.append(function.getItemid().getSnmpOid()+","); //oid snmp
-        escriba.append(function.getItemid().getUnits()+","); //unidades del item
-        escriba.append(function.getItemid().getValueType()); //tipo de valores???
-        
-        
+        escriba.append(function.getItemid().getUnits()); //unidades del item
+             
         return escriba.toString();
     }
 
