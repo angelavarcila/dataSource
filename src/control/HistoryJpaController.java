@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import model.History;
@@ -31,6 +32,10 @@ public class HistoryJpaController implements Serializable {
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
+    }
+    
+    public HistoryJpaController() {
+        emf = Persistence.createEntityManagerFactory("ConsultasZabbixPU");
     }
 
     public void create(History history) throws PreexistingEntityException, Exception {
@@ -145,4 +150,20 @@ public class HistoryJpaController implements Serializable {
         }
     }
     
+    public List<History> getHistoryByItemId(long itemid) {
+        EntityManager em = getEntityManager();
+        Query q = em.createNamedQuery("History.findByItemid");
+        q.setParameter("itemid", itemid);
+
+        return q.getResultList();
+    }
+    
+    public List<History> getHistoryByItemIdAndDate(long itemid, long clock_desde, long clock_hasta ){
+        EntityManager em = getEntityManager();
+        Query q = em.createQuery("SELECT h FROM History h WHERE h.historyPK.itemid = :itemid AND (h.historyPK.clock BETWEEN :clock_desde AND :clock_hasta)");
+        q.setParameter("itemid", itemid);
+        q.setParameter("clock_desde", clock_desde);
+        q.setParameter("clock_hasta", clock_hasta);
+        return q.getResultList();
+    }
 }
