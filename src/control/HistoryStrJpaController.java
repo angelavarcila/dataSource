@@ -8,13 +8,11 @@ package control;
 import control.exceptions.NonexistentEntityException;
 import control.exceptions.PreexistingEntityException;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import model.HistoryStr;
@@ -33,10 +31,6 @@ public class HistoryStrJpaController implements Serializable {
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
-    }
-    
-    public HistoryStrJpaController() {
-        emf = Persistence.createEntityManagerFactory("ConsultasZabbixPU");
     }
 
     public void create(HistoryStr historyStr) throws PreexistingEntityException, Exception {
@@ -149,23 +143,6 @@ public class HistoryStrJpaController implements Serializable {
         } finally {
             em.close();
         }
-    }
-
-    public List<HistoryStr> getHistoryStrByItemId(Long itemid) {
-        EntityManager em = getEntityManager();
-        Query q = em.createNamedQuery("HistoryStr.findByItemid");
-        q.setParameter("itemid", itemid);
-
-        return q.getResultList();
-    }
-    
-    public List<HistoryStr> getHistoryStrByItemIdAndDate(long itemid, long clock_desde, long clock_hasta ){
-        EntityManager em = getEntityManager();
-        Query q = em.createQuery("SELECT h FROM HistoryStr h WHERE h.historyStrPK.itemid = :itemid AND (h.historyStrPK.clock BETWEEN :clock_desde AND :clock_hasta)");
-        q.setParameter("itemid", itemid);
-        q.setParameter("clock_desde", clock_desde);
-        q.setParameter("clock_hasta", clock_hasta);
-        return q.getResultList();
     }
     
 }

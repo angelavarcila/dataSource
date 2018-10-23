@@ -42,10 +42,4 @@ public class ItemsJpaController implements Serializable {
         return emf.createEntityManager();
     }
     
-    public List<Items> getItemsByHostName(String hostName){
-        EntityManager em = getEntityManager();
-        Query q = em.createQuery("SELECT i FROM Items i WHERE i.hostid.host = :hostName");
-        q.setParameter("hostName", hostName);
-        return q.getResultList();
-    }
 }

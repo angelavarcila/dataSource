@@ -8,7 +8,6 @@ package control;
 import control.exceptions.NonexistentEntityException;
 import control.exceptions.PreexistingEntityException;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

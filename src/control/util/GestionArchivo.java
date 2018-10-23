@@ -54,7 +54,7 @@ public class GestionArchivo {
             return null;
         }
     }
- 
+
     public void escrbir(String datos, boolean aniadeTexto) {
         try {
             if (aniadeTexto) {

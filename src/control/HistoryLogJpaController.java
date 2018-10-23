@@ -8,13 +8,11 @@ package control;
 import control.exceptions.NonexistentEntityException;
 import control.exceptions.PreexistingEntityException;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import model.HistoryLog;
@@ -35,10 +33,6 @@ public class HistoryLogJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public HistoryLogJpaController() {
-        emf = Persistence.createEntityManagerFactory("ConsultasZabbixPU");
-    }
-    
     public void create(HistoryLog historyLog) throws PreexistingEntityException, Exception {
         if (historyLog.getHistoryLogPK() == null) {
             historyLog.setHistoryLogPK(new HistoryLogPK());
@@ -149,23 +143,6 @@ public class HistoryLogJpaController implements Serializable {
         } finally {
             em.close();
         }
-    }
-
-    public List<HistoryLog> getHistoryLogByItemId(Long itemid) {
-        EntityManager em = getEntityManager();
-        Query q = em.createNamedQuery("HistoryLog.findByItemid");
-        q.setParameter("itemid", itemid);
-
-        return q.getResultList();   
-    }
-    
-    public List<HistoryLog> getHistoryLogByItemIdAndDate(long itemid, long clock_desde, long clock_hasta ){
-        EntityManager em = getEntityManager();
-        Query q = em.createQuery("SELECT h FROM HistoryLog h WHERE h.historyLogPK.itemid = :itemid AND (h.historyLogPK.clock BETWEEN :clock_desde AND :clock_hasta)");
-        q.setParameter("itemid", itemid);
-        q.setParameter("clock_desde", clock_desde);
-        q.setParameter("clock_hasta", clock_hasta);
-        return q.getResultList();
     }
     
 }

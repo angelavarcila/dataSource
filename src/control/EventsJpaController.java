@@ -308,13 +308,4 @@ public class EventsJpaController implements Serializable {
         q.setParameter("triggerId", triggerId);
         return q.getResultList();
     }
-    
-    public List<Events> getEventsByTriggersAndDate(long triggerId, long clock_desde, long clock_hasta ){
-        EntityManager em = getEntityManager();
-        Query q = em.createQuery("SELECT e FROM Events e WHERE e.objectid = :triggerId AND (e.clock BETWEEN :clock_desde AND :clock_hasta)");
-        q.setParameter("triggerId", triggerId);
-        q.setParameter("clock_desde", clock_desde);
-        q.setParameter("clock_hasta", clock_hasta);
-        return q.getResultList();
-    }
 }
